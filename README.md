@@ -1,7 +1,7 @@
 # PRIMER
 The official code for PRIMER: Pyramid-based Masked Sentence Pre-training for Multi-document Summarization
 ## Requirement
-- [Longformer]('https://github.com/allenai/longformer')
+- [Longformer](https://github.com/allenai/longformer)
 - Pytorch
 - PytorchLightning
 ## Usage of PRIMER
@@ -20,5 +20,5 @@ model = LongformerEncoderDecoderForConditionalGeneration.from_pretrained(
 Make sure the documents separated with `<doc-sep>` in the input.
 
 ## Summarization Scripts
-You can use [this script]('./script/primer_main.py') for pre-train/train/test PRIMER, and [this script]('./script/compared_model_main.py') for train/test BART/PEGASUS/LED.
+You can use [this script](https://github.com/allenai/PRIMER/blob/main/script/primer_main.py) for pre-train/train/test PRIMER, and [this script](https://github.com/allenai/PRIMER/blob/main/script/compared_model_main.py) for train/test BART/PEGASUS/LED.
 
