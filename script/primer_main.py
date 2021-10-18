@@ -482,42 +482,11 @@ def train(args):
     )
 
     # load datasets
-    if args.dataset_name in ["pubmed", "multi_news", "multi_x_science_sum"]:
-        if args.dataset_name == "pubmed":
-            hf_datasets = load_dataset(
-                "scientific_papers", args.dataset_name, cache_dir=args.dataset_cache_dir
-            )
-        elif (
-            args.dataset_name == "multi_news"
-            or args.dataset_name == "multi_x_science_sum"
-        ):
-            hf_datasets = load_dataset(
-                args.dataset_name, cache_dir=args.dataset_cache_dir
-            )
+    if args.dataset_name in ["multi_news", "multi_x_science_sum"]:
+        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.dataset_cache_dir)
         train_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "train", args.num_workers, True
         )
-        valid_dataloader = get_dataloader_summ(
-            args, hf_datasets, model.tokenizer, "validation", args.num_workers, False
-        )
-    elif args.dataset_name == "wikisum":
-        all_files = args.data_path
-        if not isinstance(args.data_path, list):
-            inputs_dir = Path(os.path.join(args.data_path, "train"))
-            all_files = [path for path in inputs_dir.glob("*.pt")]
-        all_files = sorted(all_files)[:10]
-        hf_datasets = [d for f in all_files for d in torch.load(f)]
-        train_dataloader = get_dataloader_summ(
-            args, hf_datasets, model.tokenizer, "train", args.num_workers, True
-        )
-
-        all_files = args.data_path
-        if not isinstance(args.data_path, list):
-            inputs_dir = Path(os.path.join(args.data_path, "valid"))
-            all_files = [path for path in inputs_dir.glob("*.pt")]
-        all_files = sorted(all_files)[:10]
-        hf_datasets = [d for f in all_files for d in torch.load(f)]
-
         valid_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "validation", args.num_workers, False
         )
@@ -525,6 +494,7 @@ def train(args):
         ("duc" in args.dataset_name)
         or ("tac" in args.dataset_name)
         or args.dataset_name == "wcep"
+        or args.dataset_name == "wikisum"
     ):
         # 20 data from duc2003
         dataset = torch.load(args.data_path + "train.pt")
@@ -532,7 +502,10 @@ def train(args):
             args, dataset, model.tokenizer, "train", args.num_workers, True
         )
         # 10 data from duc2003
-        dataset = torch.load(args.data_path + "val.pt")
+        if os.path.exists(args.data_path + "val.pt"):
+            dataset = torch.load(args.data_path + "val.pt")
+        else:
+            dataset = torch.load(args.data_path + "valid.pt")
         valid_dataloader = get_dataloader_summ(
             args, dataset, model.tokenizer, "validation", args.num_workers, True
         )
@@ -581,29 +554,16 @@ def test(args):
         model = PRIMERSummarizerLN(args)
 
     # load dataset
-    if args.dataset_name in ["pubmed", "multi_news", "multi_x_science_sum"]:
-        if args.dataset_name == "pubmed":
-            hf_datasets = load_dataset(
-                "scientific_papers", args.dataset_name, cache_dir=args.dataset_cache_dir
-            )
-        elif (
-            args.dataset_name == "multi_news"
-            or args.dataset_name == "multi_x_science_sum"
-        ):
-            hf_datasets = load_dataset(
-                args.dataset_name, cache_dir=args.dataset_cache_dir
-            )
+    if args.dataset_name in ["multi_news", "multi_x_science_sum"]:
+        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.dataset_cache_dir)
         test_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "test", args.num_workers, False
-        )
-    elif args.dataset_name == "wikisum":
-        test_dataloader = get_dataloader_summiter(
-            args, model.tokenizer, args.data_path, "test", args.num_workers, False
         )
     elif (
         ("duc" in args.dataset_name)
         or ("tac" in args.dataset_name)
         or args.dataset_name == "wcep"
+        or args.dataset_name == "wikisum"
     ):
         if os.path.isdir(args.data_path):
             dataset = torch.load(args.data_path + "test.pt")
