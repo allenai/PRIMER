@@ -1,5 +1,7 @@
 # PRIMER
-The official code for PRIMER: Pyramid-based Masked Sentence Pre-training for Multi-document Summarization
+The official code for PRIMER: Pyramid-based Masked Sentence Pre-training for Multi-document Summarization. 
+
+PRIMER is a pre-trained model for multi-document representation with focus on summarization that reduces the need for dataset-specific architectures and large amounts of fine-tuning labeled data. With extensive experiments on 6 multi-document summarization datasets from 3 different domains on the zero-shot, few-shot and full-supervised settings, PRIMER outperforms  current state-of-the-art models on most of these settings with large margins.
 ## Set up
 1. Create new virtual environment by
 ```
@@ -17,7 +19,7 @@ pip install -r requirements.txt
 ```
 
 ## Usage of PRIMER
-1. Download the pre-trained PRIMER model [here](https://storage.googleapis.com/primer_summ/PRIMER-large.tar.gz)
+1. Download the pre-trained PRIMER model [here](https://storage.googleapis.com/primer_summ/PRIMER-large.tar.gz) to `./PRIMER_model`
 2. Load the tokenizer and model by
 ```python
 from transformers import AutoTokenizer
@@ -32,7 +34,7 @@ model = LongformerEncoderDecoderForConditionalGeneration.from_pretrained(
 Make sure the documents separated with `<doc-sep>` in the input.
 
 ## Summarization Scripts
-You can use `script/primer_main.py` for pre-train/train/test PRIMER, and `compared_model_main.py` for train/test BART/PEGASUS/LED.
+You can use `script/primer_main.py` for pre-train/train/test PRIMER, and `script/compared_model_main.py` for train/test BART/PEGASUS/LED.
 
 ## Pre-training Data Generation
 Newshead: we crawled the newshead dataset using the [original code](https://github.com/google-research-datasets/NewSHead), and cleaned up the crawled data, the final newshead dataset can be found [here](https://storage.googleapis.com/primer_summ/newshead_data.tar.gz).
