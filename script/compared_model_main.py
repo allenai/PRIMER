@@ -35,8 +35,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.plugins import DDPPlugin
 from pathlib import Path
 
-# DATASET_CACHE_DIR = "/net/nfs.cs/s2-research/wenx/dataset/"
-
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
     """From fairseq"""
@@ -500,7 +498,7 @@ def train(args):
     # load datasets
     if args.dataset_name in ["multi_news", "multi_x_science_sum"]:
 
-        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.dataset_cache_dir)
+        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.data_path)
         train_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "train", 0, True
         )
@@ -574,7 +572,7 @@ def test(args):
     # load dataset
     if args.dataset_name in ["multi_news", "multi_x_science_sum"]:
 
-        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.dataset_cache_dir)
+        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.data_path)
         test_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "test", 0, False
         )
@@ -650,13 +648,8 @@ if __name__ == "__main__":
         default=None,
     )
 
-    parser.add_argument(
-        "--data_path", type=str, default="../processed_data/multi_news/"
-    )
+    parser.add_argument("--data_path", type=str, default="../dataset/")
     parser.add_argument("--dataset_name", type=str, default="arxiv")
-    parser.add_argument(
-        "--dataset_cache_dir", type=str, default="/net/nfs2.s2-research/wenx/dataset/"
-    )
     parser.add_argument(
         "--num_workers",
         type=int,
@@ -764,7 +757,7 @@ if __name__ == "__main__":
     args = parser.parse_args()  # Get pad token id
     ####################
     args.acc_batch = args.accum_data_per_step // args.batch_size
-
+    args.data_path = os.path.join(args.data_path, args.dataset_name)
     if not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
 

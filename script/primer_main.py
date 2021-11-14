@@ -483,7 +483,7 @@ def train(args):
 
     # load datasets
     if args.dataset_name in ["multi_news", "multi_x_science_sum"]:
-        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.dataset_cache_dir)
+        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.data_path)
         train_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "train", args.num_workers, True
         )
@@ -555,7 +555,7 @@ def test(args):
 
     # load dataset
     if args.dataset_name in ["multi_news", "multi_x_science_sum"]:
-        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.dataset_cache_dir)
+        hf_datasets = load_dataset(args.dataset_name, cache_dir=args.data_path)
         test_dataloader = get_dataloader_summ(
             args, hf_datasets, model.tokenizer, "test", args.num_workers, False
         )
@@ -599,9 +599,6 @@ if __name__ == "__main__":
         "--debug_mode", action="store_true", help="set true if to debug"
     )
     parser.add_argument(
-        "--large", action="store_true", help="set true if use large model"
-    )
-    parser.add_argument(
         "--compute_rouge",
         action="store_true",
         help="whether to compute rouge in validation steps",
@@ -627,7 +624,6 @@ if __name__ == "__main__":
 
     parser.add_argument("--data_path", type=str, default="../dataset/")
     parser.add_argument("--dataset_name", type=str, default="multi_news")
-    parser.add_argument("--dataset_cache_dir", type=str, default="../dataset/")
     parser.add_argument("--tokenizer", type=str, default="facebook/bart-base")
     parser.add_argument(
         "--num_workers",
@@ -768,7 +764,7 @@ if __name__ == "__main__":
     ####################
 
     args.acc_batch = args.accum_data_per_step // args.batch_size
-
+    args.data_path = os.path.join(args.data_path, args.dataset_name)
     if not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
 
