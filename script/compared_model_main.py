@@ -682,7 +682,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--pretrained_model_path",
         type=str,
-        default="/net/nfs2.s2-research/wenx/code/pretrained_models/",
+        default="./pretrained_models/",
     )
     parser.add_argument(
         "--limit_valid_batches",
