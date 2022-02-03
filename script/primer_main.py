@@ -726,6 +726,12 @@ if __name__ == "__main__":
         action="store_true",
         help="whether this is a run for few shot learning",
     )
+    parser.add_argument(
+        "--eval_steps",
+        type=int,
+        default=2500,
+        help="Number of steps to evaluate in the pre-training stage.",
+    )
     ########################
     # For testing
     parser.add_argument(
