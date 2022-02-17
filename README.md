@@ -59,4 +59,4 @@ You can use `utils/pretrain_preprocess.py` to generate pre-training data.
 2. Generate pre-training data with `--mode pretraining_data_with_score`:
     - Pegasus: `--strategy greedy --metric pegasus_score`
     - Entity_Pyramid: `--strategy greedy_entity_pyramid --metric pyramid_rouge`
-  (The processed data that could directly be used for pre-training can be found [here](https://storage.googleapis.com/primer_summ/greedy_entity_pyramid_pyramid_rouge_03_05.tar.gz))
+  (The processed data that could directly be used for pre-training can be found [here](https://storage.googleapis.com/primer_summ/processed_pretraining_data.tar.gz))
