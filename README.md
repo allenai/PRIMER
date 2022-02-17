@@ -54,8 +54,9 @@ We provide all the fully supervised models below.
 ## Pre-training Data Generation
 Newshead: we crawled the newshead dataset using the [original code](https://github.com/google-research-datasets/NewSHead), and cleaned up the crawled data, the final newshead dataset can be found [here](https://storage.googleapis.com/primer_summ/newshead_data.tar.gz).
 
-You can use `utils/pretrain_preprocess.py` to generate pre-training data.
-1. Generate data with scores and entities with `--mode compute_all_scores` 
+You can use `utils/pretrain_preprocess.py` to generate pre-training data. 
+1. Generate data with scores and entities with `--mode compute_all_scores` (The processed data with scores and entities can be found [here](https://storage.googleapis.com/primer_summ/data_with_score_newshead.tar.gz))
 2. Generate pre-training data with `--mode pretraining_data_with_score`:
     - Pegasus: `--strategy greedy --metric pegasus_score`
     - Entity_Pyramid: `--strategy greedy_entity_pyramid --metric pyramid_rouge`
+  (The processed data that could directly be used for pre-training can be found [here](https://storage.googleapis.com/primer_summ/greedy_entity_pyramid_pyramid_rouge_03_05.tar.gz))
