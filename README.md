@@ -2,6 +2,20 @@
 The official code for PRIMERA: Pyramid-based Masked Sentence Pre-training for Multi-document Summarization. 
 
 PRIMERA is a pre-trained model for multi-document representation with focus on summarization that reduces the need for dataset-specific architectures and large amounts of fine-tuning labeled data. With extensive experiments on 6 multi-document summarization datasets from 3 different domains on the zero-shot, few-shot and full-supervised settings, PRIMER outperforms  current state-of-the-art models on most of these settings with large margins.
+## Updates (2022-MAR-09)
+For better usage of the model, we convert our trained models to the Huggingface version, which will be loaded to the Huggingface Model Hub soon. (The code for model conversion can be found `Convert_to_hf_LED.ipynb`, where the input is the `state_dict()` of our model)
+
+We update the scripts and (example) bash files to run the Huggingface version of PRIMERA in the `./script/primer_hf_main.py` and `./run_bash/`, respectively. We also create a notebook as an example usage for evaluating our fine-tuned model on the multi-news dataset (`Evaluation_Example.ipynb`).
+
+* Note: due to the difference between the implementations of the original [Longformer](https://github.com/allenai/longformer) and the Huggingface [LED model](https://huggingface.co/docs/transformers/model_doc/led), the results of converted models are slightly different. We run a sanity check on both fine-tuned and non fine-tuned models, and show the results below:
+
+| Model | Rouge-1 | Rouge-2 | Rouge-L |
+| --- | ----------- |----------- |----------- |
+| PRIMERA | 42.0 | 13.6 | 20.8| 
+| PRIMERA-hf | 41.7 |13.6 | 20.5|
+| PRIMERA(finetuned) | 49.9 | 21.1 | 25.9|
+| PRIMERA-hf(finetuned) | 49.9 | 20.9 | 25.8|
+
 ## Set up
 1. Create new virtual environment by
 ```
