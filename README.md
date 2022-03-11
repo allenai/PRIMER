@@ -7,7 +7,7 @@ For better usage of the model, we convert our trained models to the Huggingface 
 
 We update the scripts and (example) bash files to run the Huggingface version of PRIMERA in the `./script/primer_hf_main.py` and `./run_bash/`, respectively. We also create a notebook as an example usage for evaluating our fine-tuned model on the multi-news dataset (`Evaluation_Example.ipynb`).
 
-* Note: due to the difference between the implementations of the original [Longformer](https://github.com/allenai/longformer) and the Huggingface [LED model](https://huggingface.co/docs/transformers/model_doc/led), the results of converted models are slightly different. We run a sanity check on both fine-tuned and non fine-tuned models, and show the results below:
+* Note: due to the difference between the implementations of the original [Longformer](https://github.com/allenai/longformer) and the Huggingface [LED model](https://huggingface.co/docs/transformers/model_doc/led), the results of converted models are slightly different. We run a sanity check on both fine-tuned and non fine-tuned models on the **Multi-News dataset**, and show the results below:
 
 | Model | Rouge-1 | Rouge-2 | Rouge-L |
 | --- | ----------- |----------- |----------- |
