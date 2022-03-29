@@ -19,4 +19,4 @@ nohup python primer_main.py  \
                 --num_workers 0 \
                 --progress_bar_refresh_rate 50 \
                 --beam_size 5 \
-        > ../test_${DATA_NAME}_${MODEL_NAME}.out &
+        > ../test_${DATA_NAME}_${MODEL_NAME}.out 2>&1

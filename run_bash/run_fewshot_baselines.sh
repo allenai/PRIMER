@@ -94,5 +94,5 @@ nohup python pegasus_main.py  \
                         --test_imediate \
                         --test_batch_size 8 \
                         --fewshot \
-                > ../fewshot_${DATA_NAME}_${MODEL_SAVE_NAME}_${RAND_SEED}.out &
+                > ../fewshot_${DATA_NAME}_${MODEL_SAVE_NAME}_${RAND_SEED}.out 2>&1
 

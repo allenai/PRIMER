@@ -44,5 +44,5 @@ nohup python pegasus_main.py  \
                         --data_path ${DATA_PATH} \
                         --max_length_tgt ${LENGTH_TGT} \
                         --max_length_input ${LENGTH_INPUT} \
-                > ../test_${DATA_NAME}_${MODEL_SAVE_NAME}.out &
+                > ../test_${DATA_NAME}_${MODEL_SAVE_NAME}.out 2>&1
 
