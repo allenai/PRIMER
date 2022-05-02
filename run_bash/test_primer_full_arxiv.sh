@@ -18,5 +18,5 @@ nohup python primer_main.py  \
                 --primer_path ../${MODEL_PATH} \
                 --num_workers 0 \
                 --progress_bar_refresh_rate 50 \
-        > ../test_${DATA_NAME}_${MODEL_NAME}.out &
+        > ../test_${DATA_NAME}_${MODEL_NAME}.out 2>&1
 
