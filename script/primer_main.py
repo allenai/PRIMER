@@ -261,7 +261,10 @@ class PRIMERSummarizerLN(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         for p in self.model.parameters():
             p.requires_grad = False
-        input_ids, output_ids, tgt = batch
+        if self.args.mode=='pretrain':
+            input_ids, output_ids = batch
+        else:
+            input_ids, output_ids, tgt = batch
         loss = self.shared_step(input_ids, output_ids)
         if self.args.compute_rouge:
             result_batch = self.compute_rouge_batch(input_ids, output_ids, tgt)
