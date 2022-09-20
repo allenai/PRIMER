@@ -68,6 +68,13 @@ class PRIMERSummarizerLN(pl.LightningModule):
 
         self.use_ddp = args.accelerator == "ddp"
         self.docsep_token_id = self.tokenizer.convert_tokens_to_ids("<doc-sep>")
+        if args.mode=='pretrain':
+            # The special token is added after each document in the pre-processing step.
+            self.tokenizer.add_special_tokens(
+                {"additional_special_tokens": ["<doc-sep>"]}
+            )
+            self.docsep_token_id = self.tokenizer.additional_special_tokens_ids[0]
+            self.model.resize_token_embeddings(len(self.tokenizer))
 
     def _prepare_input(self, input_ids):
         attention_mask = torch.ones(
