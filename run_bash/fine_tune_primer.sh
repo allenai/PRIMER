@@ -30,4 +30,4 @@ CUDA_LAUNCH_BLOCKING=1 python primer_main_fs.py  \
                 --test_imediate \
                 --test_batch_size 8 \
                 --grad_ckpt \
-        > ../finetune_${DATA_NAME}_${MODEL_NAME}_${RAND_SEED}.out 2>&1
+        > ../output/finetune_${DATA_NAME}_${MODEL_NAME}_${RAND_SEED}.out 2>&1
