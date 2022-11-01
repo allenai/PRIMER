@@ -1,6 +1,7 @@
 from pytorch_lightning.accelerators import accelerator
 import torch
 import os
+import os.path
 import argparse
 from torch.utils.data import DataLoader
 import numpy as np
@@ -13,6 +14,8 @@ from transformers import Adafactor
 from longformer.sliding_chunks import pad_to_window_size
 from longformer import LongformerEncoderDecoderForConditionalGeneration
 from longformer import LongformerEncoderDecoderConfig
+# from transformers import LEDForConditionalGeneration as LongformerEncoderDecoderForConditionalGeneration
+# from transformers import LEDConfig as LongformerEncoderDecoderConfig
 import pandas as pd
 import pdb
 import pytorch_lightning as pl
@@ -219,8 +222,8 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 os.makedirs(output_dir)
             idx = len(os.listdir(output_dir))
         result_batch = []
-        ourcus_batch = []
         preds = []
+        try_time = 0
         for ref, pred in zip(gold_str, generated_str):
             if self.args.mode == "test":
                 with open(os.path.join(output_dir, "%d.txt" % (idx)), "w") as of:
@@ -251,9 +254,14 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 )
             )
             preds.append(pred)
-        with open('/content/drive/MyDrive/MDS/wcep_custom/bs3_test/filtered_non/gen_summ_tuned/gen_summ_tuned.test.tgt', 'a+') as f:
+        path_file = os.path.join('//home/ethan/Documents/Quert/PRIMER/output', 
+                            'gen_summ_%d.test.tgt' % (try_time))
+        # if os.path.exists(path_file):
+        #     os.remove(path_file)
+        with open(path_file, 'a+') as f:
             for line in generated_str:
                 f.write(line.strip()+'\n')
+        try_time+=1
         return result_batch
 
     def validation_step(self, batch, batch_idx):
@@ -279,7 +287,7 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 ]
             )
         rouge_results = pd.DataFrame(rouge_result_all, columns=names)
-        # rouge_results.to_csv('/content/drive/MyDrive/MDS/wcep_custom/bs3_test/filtered_non/gen_summ/rouge_result.csv')
+        rouge_results.to_csv('/home/ethan/Documents/Quert/PRIMER/output/rouge_result.csv')
         avg = [rouge_results[c].mean() for c in rouge_results.columns]
         rouge_results.loc["avg_score"] = avg
         if output_file:
