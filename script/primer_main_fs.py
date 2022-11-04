@@ -1,7 +1,6 @@
 from pytorch_lightning.accelerators import accelerator
 import torch
 import os
-import os.path
 import argparse
 from torch.utils.data import DataLoader
 import numpy as np
@@ -14,8 +13,6 @@ from transformers import Adafactor
 from longformer.sliding_chunks import pad_to_window_size
 from longformer import LongformerEncoderDecoderForConditionalGeneration
 from longformer import LongformerEncoderDecoderConfig
-# from transformers import LEDForConditionalGeneration as LongformerEncoderDecoderForConditionalGeneration
-# from transformers import LEDConfig as LongformerEncoderDecoderConfig
 import pandas as pd
 import pdb
 import pytorch_lightning as pl
@@ -30,7 +27,7 @@ from dataloader import (
 )
 import json
 from pathlib import Path
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
     """From fairseq"""
@@ -68,8 +65,16 @@ class PRIMERSummarizerLN(pl.LightningModule):
             args.primer_path,
             config=config,
         )
+
         self.use_ddp = args.accelerator == "ddp"
         self.docsep_token_id = self.tokenizer.convert_tokens_to_ids("<doc-sep>")
+        if args.mode=='pretrain':
+            # The special token is added after each document in the pre-processing step.
+            self.tokenizer.add_special_tokens(
+                {"additional_special_tokens": ["<doc-sep>"]}
+            )
+            self.docsep_token_id = self.tokenizer.additional_special_tokens_ids[0]
+            self.model.resize_token_embeddings(len(self.tokenizer))
 
     def _prepare_input(self, input_ids):
         attention_mask = torch.ones(
@@ -236,7 +241,6 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 use_agregator=False,
                 use_stemmer=True,
             )
-            # ourcus_batch.append(generated_str)
             result_batch.append(
                 (
                     s["rouge1"][0].recall,
@@ -254,10 +258,8 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 )
             )
             preds.append(pred)
-        path_file = os.path.join('//home/ethan/Documents/Quert/PRIMER/output', 
+        path_file = os.path.join('/home/ethan/Documents/Quert/PRIMER/output/', 
                             'gen_summ_%d.test.tgt' % (try_time))
-        # if os.path.exists(path_file):
-        #     os.remove(path_file)
         with open(path_file, 'a+') as f:
             for line in generated_str:
                 f.write(line.strip()+'\n')
@@ -267,7 +269,10 @@ class PRIMERSummarizerLN(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         for p in self.model.parameters():
             p.requires_grad = False
-        input_ids, output_ids, tgt = batch
+        if self.args.mode=='pretrain':
+            input_ids, output_ids = batch
+        else:
+            input_ids, output_ids, tgt = batch
         loss = self.shared_step(input_ids, output_ids)
         if self.args.compute_rouge:
             result_batch = self.compute_rouge_batch(input_ids, output_ids, tgt)
@@ -469,6 +474,7 @@ def train(args):
 
     # initialize logger
     logger = TensorBoardLogger(args.model_path + "tb_logs", name="my_model")
+
     # initialize trainer
     trainer = pl.Trainer(
         gpus=args.gpus,
@@ -535,7 +541,6 @@ def train(args):
         valid_dataloader = get_dataloader_summ(
             args, dataset, model.tokenizer, "validation", args.num_workers, False
         )
-    torch.cuda.empty_cache()
     trainer.fit(model, train_dataloader, valid_dataloader)
     if args.test_imediate:
         args.resume_ckpt = checkpoint_callback.best_model_path
@@ -642,7 +647,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_workers",
         type=int,
-        default=8,
+        default=1,
         help="Number of workers to use for dataloader",
     )
 
