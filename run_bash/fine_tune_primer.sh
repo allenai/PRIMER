@@ -11,7 +11,7 @@ MODEL_PATH="PRIMER_wcep"
 
 # NUM_TRAIN_DATA=100
 
-CUDA_LAUNCH_BLOCKING=1 python primer_main_fs.py  \
+CUDA_LAUNCH_BLOCKING=1 python3 primer_main_fs.py  \
                 --gpus 1  \
                 --mode train \
                 --lr 3e-5 \
