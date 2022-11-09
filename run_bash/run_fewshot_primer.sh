@@ -73,5 +73,5 @@ nohup python primer_main.py  \
                 --test_batch_size 8 \
                 --fewshot \
                 --grad_ckpt \
-        > ../fewshot_${DATA_NAME}_${MODEL_NAME}_${RAND_SEED}.out &
+        > ../fewshot_${DATA_NAME}_${MODEL_NAME}_${RAND_SEED}.out 2>&1
 done

@@ -27,7 +27,7 @@ from dataloader import (
 )
 import json
 from pathlib import Path
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
     """From fairseq"""
@@ -65,6 +65,7 @@ class PRIMERSummarizerLN(pl.LightningModule):
             args.primer_path,
             config=config,
         )
+
         self.use_ddp = args.accelerator == "ddp"
         self.docsep_token_id = self.tokenizer.convert_tokens_to_ids("<doc-sep>")
         if args.mode=='pretrain':
@@ -226,8 +227,8 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 os.makedirs(output_dir)
             idx = len(os.listdir(output_dir))
         result_batch = []
-        ourcus_batch = []
         preds = []
+        try_time = 0
         for ref, pred in zip(gold_str, generated_str):
             if self.args.mode == "test":
                 with open(os.path.join(output_dir, "%d.txt" % (idx)), "w") as of:
@@ -240,7 +241,6 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 use_agregator=False,
                 use_stemmer=True,
             )
-            # ourcus_batch.append(generated_str)
             result_batch.append(
                 (
                     s["rouge1"][0].recall,
@@ -258,9 +258,12 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 )
             )
             preds.append(pred)
-        with open('/content/drive/MyDrive/MDS/wcep_custom/bs3_test/filtered_non/gen_summ_tuned/gen_summ_tuned.test.tgt', 'a+') as f:
+        path_file = os.path.join('/home/ethan/Documents/Quert/PRIMER/output/', 
+                            'gen_summ_%d.test.tgt' % (try_time))
+        with open(path_file, 'a+') as f:
             for line in generated_str:
                 f.write(line.strip()+'\n')
+        try_time+=1
         return result_batch
 
     def validation_step(self, batch, batch_idx):
@@ -289,7 +292,7 @@ class PRIMERSummarizerLN(pl.LightningModule):
                 ]
             )
         rouge_results = pd.DataFrame(rouge_result_all, columns=names)
-        # rouge_results.to_csv('/content/drive/MyDrive/MDS/wcep_custom/bs3_test/filtered_non/gen_summ/rouge_result.csv')
+        rouge_results.to_csv('/home/ethan/Documents/Quert/PRIMER/output/rouge_result.csv')
         avg = [rouge_results[c].mean() for c in rouge_results.columns]
         rouge_results.loc["avg_score"] = avg
         if output_file:
@@ -471,6 +474,7 @@ def train(args):
 
     # initialize logger
     logger = TensorBoardLogger(args.model_path + "tb_logs", name="my_model")
+
     # initialize trainer
     trainer = pl.Trainer(
         gpus=args.gpus,
@@ -537,7 +541,6 @@ def train(args):
         valid_dataloader = get_dataloader_summ(
             args, dataset, model.tokenizer, "validation", args.num_workers, False
         )
-    torch.cuda.empty_cache()
     trainer.fit(model, train_dataloader, valid_dataloader)
     if args.test_imediate:
         args.resume_ckpt = checkpoint_callback.best_model_path
@@ -644,7 +647,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_workers",
         type=int,
-        default=8,
+        default=1,
         help="Number of workers to use for dataloader",
     )
 
